@@ -1,0 +1,10 @@
+{
+  "name": "protonmail-proxy-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "author": {
+    "email": "eh5@eh5.me",
+    "name": "Huang-Huang Bao"
+  },
+  "license": "MIT"
+}

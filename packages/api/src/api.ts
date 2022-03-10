@@ -1,0 +1,3 @@
+class PmApi {}
+
+export { PmApi }

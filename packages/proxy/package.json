@@ -1,0 +1,8 @@
+{
+  "name": "protonmail-proxy",
+  "version": "0.0.0",
+  "type": "module",
+  "dependencies": {
+    "@protonmail-proxy/api": "workspace:^0.0.0"
+  }
+}
