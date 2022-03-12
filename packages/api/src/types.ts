@@ -1,7 +1,13 @@
-export interface PmBrowserType {
-  launch(): Promise<PmBrowser>
+export interface PmBrowserType<A extends any[]> {
+  /***
+   * Launch browser with shared context
+   */
+  launch(...args: A): Promise<PmBrowser>
 }
 
+/***
+ * Browser context
+ */
 export interface PmBrowser {
   newPage(): Promise<PmPage>
   close(): Promise<void>

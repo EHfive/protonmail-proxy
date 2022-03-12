@@ -1,3 +1,4 @@
+import { type } from 'os'
 import { Browser, BrowserContext, Page, ElementHandle } from 'puppeteer'
 import {
   PmBrowser,
@@ -8,18 +9,35 @@ import {
   PmCookie,
 } from '../types'
 
-type Puppeteer = import('puppeteer').PuppeteerNode
+type PuppeteerNode = typeof import('puppeteer')
 
-export class PmBrowserTypePuppeteer implements PmBrowserType {
-  private _puppeteer?: Puppeteer
-  constructor(options?: { puppeteer?: Puppeteer }) {
+interface LaunchOptions {
+  userDataDir?: string
+  puppeteerOptions?: Parameters<PuppeteerNode['launch']>[0]
+}
+
+export class PmBrowserTypePuppeteer implements PmBrowserType<[LaunchOptions]> {
+  private _puppeteer?: PuppeteerNode
+  constructor(options?: { puppeteer?: PuppeteerNode }) {
     this._puppeteer = options?.puppeteer
   }
 
-  async launch(): Promise<PmBrowser> {
-    const puppeteer = this._puppeteer || (await import('puppeteer')).default
+  private async getPuppeteer() {
+    if (!this._puppeteer) {
+      this._puppeteer = (await import('puppeteer')).default
+    }
+    return this._puppeteer
+  }
+
+  async launch(options?: LaunchOptions) {
+    const puppeteer = await this.getPuppeteer()
+    const userDataDir =
+      options?.userDataDir || options?.puppeteerOptions?.userDataDir
     return new PmBrowserPuppeteerImpl(
-      await puppeteer.launch({ headless: false })
+      await puppeteer.launch({
+        ...options?.puppeteerOptions,
+        userDataDir,
+      })
     )
   }
 }

@@ -1,15 +1,24 @@
-import EventEmitter from 'events'
-import { Browser, BrowserContext, Page, ElementHandle } from 'playwright'
-import { PmBrowser, PmBrowserType, PmCookie, PmElement, PmPage } from '../types'
 import { access } from 'fs/promises'
+import {
+  Browser,
+  BrowserType,
+  BrowserContext,
+  Page,
+  ElementHandle,
+} from 'playwright'
+import { PmBrowser, PmBrowserType, PmCookie, PmElement, PmPage } from '../types'
 
 type Playwright = typeof import('playwright')
 
 type PmBrowserTypeStr = 'chromium' | 'firefox' | 'webkit'
 
-const saveStatePath = '/tmp/pm/state.json'
+interface LaunchOptions {
+  userDataDir?: string
+  storageState?: string
+  playwrightOptions?: Parameters<BrowserType['launch']>[0]
+}
 
-export class PmBrowserTypePlaywright implements PmBrowserType {
+export class PmBrowserTypePlaywright implements PmBrowserType<[LaunchOptions]> {
   private _playwright?: Playwright
   private _browserType: PmBrowserTypeStr
 
@@ -18,21 +27,44 @@ export class PmBrowserTypePlaywright implements PmBrowserType {
     this._playwright = options?.playwright
   }
 
-  async launch(): Promise<PmBrowser> {
-    const playwright = this._playwright || (await import('playwright'))
-    const browser = await playwright[this._browserType].launch({
-      headless: false,
-    })
-    let loadStatePath
-    try {
-      await access(saveStatePath)
-      loadStatePath = saveStatePath
-    } catch {
-      loadStatePath = undefined
+  private async getPlaywright() {
+    if (!this._playwright) {
+      this._playwright = await import('playwright')
     }
+    return this._playwright
+  }
+
+  async launch(options?: LaunchOptions) {
+    const playwright = await this.getPlaywright()
+    const browserType = playwright[this._browserType]
+
+    const playwrightOptions = {
+      ...options?.playwrightOptions,
+    }
+
+    if (options?.userDataDir) {
+      const context = await browserType.launchPersistentContext(
+        options?.userDataDir,
+        playwrightOptions
+      )
+      return new PmBrowserPlaywrightImpl(context)
+    }
+
+    const browser = await browserType.launch(playwrightOptions)
+
+    const saveStatePath = options?.storageState
+    let loadStatePath = saveStatePath
+    if (loadStatePath)
+      try {
+        await access(loadStatePath)
+      } catch {
+        loadStatePath = undefined
+      }
     const context = await browser.newContext({ storageState: loadStatePath })
+
     return new PmBrowserPlaywrightImpl(context, {
       onBeforeClose() {
+        if (!saveStatePath) return
         return context.storageState({ path: saveStatePath })
       },
       onAfterClose() {
