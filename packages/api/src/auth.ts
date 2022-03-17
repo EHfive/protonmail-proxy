@@ -1,11 +1,19 @@
-import { PmBrowser, PmCookie, PmError, PmPage } from './types'
+import { PmAuthInfo, PmBrowser, PmError, PmPage } from './types'
 
 async function waitForMailboxPage(page: PmPage) {
   await page.waitForSelector('button.user-dropdown-button')
 }
 
-interface LoginResponse {
-  cookies: PmCookie[]
+async function getAuthInfo(page: PmPage) {
+  const cookies = await page.cookies([
+    'https://mail.protonmail.com/api/',
+    // 'https://account.protonmail.com/api/',
+  ])
+  const localStorage = await page.localStorage()
+  return {
+    cookies,
+    localStorage,
+  }
 }
 
 export class PmAuth {
@@ -17,7 +25,7 @@ export class PmAuth {
   async login(options?: {
     username?: string
     password?: string
-  }): Promise<LoginResponse> {
+  }): Promise<PmAuthInfo> {
     const page = await this._browser.newPage()
     await page.goto('https://account.protonmail.com/login')
 
@@ -65,14 +73,9 @@ export class PmAuth {
       console.log('already logged in')
     }
 
-    const cookies = await page.cookies([
-      'https://mail.protonmail.com/api/',
-      'https://account.protonmail.com/api/',
-    ])
+    const authInfo = await getAuthInfo(page)
 
     await page.close()
-    return {
-      cookies,
-    }
+    return authInfo
   }
 }

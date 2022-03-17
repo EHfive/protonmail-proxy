@@ -92,6 +92,10 @@ class PmPagePuppeteerImpl implements PmPage {
     return await this._page.cookies(...urls)
   }
 
+  async localStorage() {
+    return await this._page.evaluate('Object.assign({}, window.localStorage)')
+  }
+
   async close(): Promise<void> {
     await this._page.close()
   }
@@ -104,11 +108,11 @@ class PmElementPuppeteerImpl implements PmElement {
   }
 
   async innerText(): Promise<string> {
-    return await this._el.evaluate((e) => e.innerText)
+    return await this._el.evaluate((e) => (e as any).innerText)
   }
 
   async check(): Promise<void> {
-    const checked = await this._el.evaluate((e) => e.checked)
+    const checked = await this._el.evaluate((e) => (e as any).checked)
     if (checked === false) await this._el.click()
   }
 

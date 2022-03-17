@@ -135,6 +135,10 @@ class PmPagePlayWrightImpl implements PmPage {
     return await this._page.context().cookies(urls || this._page.url())
   }
 
+  async localStorage(): Promise<{ [key: string]: any }> {
+    return await this._page.evaluate('Object.assign({}, window.localStorage)')
+  }
+
   async close(): Promise<void> {
     await this._page.close()
   }

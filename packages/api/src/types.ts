@@ -29,6 +29,7 @@ export interface PmPage {
   waitForSelector(selector: string, visible?: boolean): Promise<PmElement>
   waitForTimeout(timeout: number): Promise<void>
   cookies(urls?: string | string[]): Promise<PmCookie[]>
+  localStorage(): Promise<{ [key: string]: any }>
   close(): Promise<void>
 }
 
@@ -38,5 +39,27 @@ export interface PmElement {
   click(): Promise<void>
   fill(value: string): Promise<void>
 }
+
+export interface PmAuthInfo {
+  cookies: PmCookie[]
+  localStorage: { [key: string]: any }
+}
+
+export interface PmFetchRequest<R = any> {
+  method?: 'get' | 'post'
+  base?: string
+  url: string
+  params?: { [key: string]: string }
+  headers?: { [key: string]: string }
+  data?: any
+}
+
+export interface PmFetchResponse {
+  status: number
+  headers: { [key: string]: string }
+  data?: any
+}
+
+export type PmFetch = (options: PmFetchRequest) => Promise<PmFetchResponse>
 
 export class PmError extends Error {}
