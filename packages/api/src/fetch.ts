@@ -5,7 +5,7 @@ import {
   PmFetchRequest,
   PmFetchResponse,
 } from './types'
-import { pRetry, guessCurrentPersistedSession } from './utils'
+import { pRetry, guessCurrentPersistedSession, combineURLs } from './utils'
 
 export interface PmFetcherOptions {
   onFetch: PmFetch
@@ -43,7 +43,7 @@ export class PmFetcher {
       .join('; ')
     options = {
       ...options,
-      base: options.base || 'https://mail.protonmail.com',
+      baseUrl: options.baseUrl || 'https://mail.protonmail.com/api',
       headers: {
         ...options.headers,
         'x-pm-appversion': 'web-mail@4.17.5',
@@ -85,5 +85,36 @@ export class PmFetchError extends PmError {
     super(options.message)
     this.request = options.request
     this.response = options.response
+  }
+}
+
+export function createPmFetch(
+  fetch: (
+    url: string,
+    init?: Record<string, any>
+  ) => Promise<Record<string, any>>
+): PmFetch {
+  return async function (options) {
+    const url = new URL(combineURLs(options.url, options.baseUrl))
+    url.search = new URLSearchParams(options.params).toString()
+    const res = await fetch(url.toString(), {
+      method: options.method?.toUpperCase(),
+      headers: options.headers,
+      body: options.data
+        ? options.isRaw
+          ? options.data
+          : JSON.stringify(options.data)
+        : null,
+    })
+    const headers = {
+      ...res.headers,
+    }
+    if (!options.isRaw && options.data)
+      headers['Content-Type'] = 'application/json'
+    return {
+      headers,
+      status: res.status,
+      data: await res.json(),
+    }
   }
 }

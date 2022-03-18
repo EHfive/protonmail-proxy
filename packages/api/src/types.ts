@@ -42,24 +42,33 @@ export interface PmElement {
 
 export interface PmAuthInfo {
   cookies: PmCookie[]
-  localStorage: { [key: string]: any }
+  localStorage: Record<string, string>
 }
 
 export interface PmFetchRequest<R = any> {
-  method?: 'get' | 'post'
-  base?: string
+  method?: 'get' | 'post' | 'put' | 'delete' | string
+  baseUrl?: string
   url: string
-  params?: { [key: string]: string }
-  headers?: { [key: string]: string }
+  params?: Record<string, string>
+  headers?: Record<string, string>
+  /**
+   * Is {@link data} a raw stream data or a JSON
+   */
+  isRaw?: boolean
   data?: any
 }
 
 export interface PmFetchResponse {
   status: number
-  headers: { [key: string]: string }
+  headers: Record<string, string>
   data?: any
 }
 
 export type PmFetch = (options: PmFetchRequest) => Promise<PmFetchResponse>
+
+export interface PmApiData {
+  Code: number
+  [key: string]: any
+}
 
 export class PmError extends Error {}

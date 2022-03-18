@@ -19,7 +19,7 @@ export async function pRetry<T>(run: () => Promise<T>, times = 3): Promise<T> {
 
 export function guessCurrentPersistedSession(
   authInfo: PmAuthInfo
-): { [key: string]: any } | undefined {
+): Record<string, any> | undefined {
   const psPattern = /^ps-([0-9]+)$/
 
   let maxLocalId = -1
@@ -36,4 +36,10 @@ export function guessCurrentPersistedSession(
   } catch (_) {
     return undefined
   }
+}
+
+export function combineURLs(relativeURL: string, baseURL?: string) {
+  return baseURL
+    ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
+    : relativeURL
 }

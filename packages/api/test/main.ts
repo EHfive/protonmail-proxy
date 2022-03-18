@@ -1,16 +1,19 @@
 import path from 'path'
 import { mkdir } from 'fs/promises'
-import { URL, URLSearchParams } from 'url'
 import { PmBrowserTypePlaywright } from '../src/browser/playwright'
 import { PmBrowserTypePuppeteer } from '../src/browser/puppeteer'
 import { PmAuth } from '../src/auth'
-import { PmFetcher } from '../src/fetch'
+import { PmFetcher, createPmFetch } from '../src/fetch'
 import loginInfo from './auth.json'
+import { queryMessages } from '../src/api/messages'
 
 const _importDynamic = new Function('modulePath', 'return import(modulePath)')
 
 async function run() {
-  const fetch = (await _importDynamic('node-fetch')).default
+  const { default: fetch, FormData } = (await _importDynamic(
+    'node-fetch'
+  )) as typeof import('node-fetch')
+
   const outputDir = path.join(__dirname, 'output')
   try {
     await mkdir(outputDir)
@@ -38,30 +41,19 @@ async function run() {
 
   const fetcher = new PmFetcher({
     initAuthInfo: info,
-    async onAuth() {
+    async onAuth(_) {
       return await auth.login({ ...loginInfo })
     },
-    async onFetch(options) {
-      const url = new URL(options.url, options.base)
-      url.search = new URLSearchParams({
-        ...options.params,
-      }).toString()
-      console.log(url)
-      const res = await fetch(url.toString(), {
-        headers: options.headers,
-        body: options.data ? JSON.stringify(options.data) : null,
-      })
-      return {
-        headers: { ...res.headers },
-        status: res.status,
-        data: await res.json(),
-      }
-    },
+    onFetch: createPmFetch(fetch),
   })
 
-  const res = await fetcher.fetch({
-    url: 'api/mail/v4/conversations',
-  })
+  const res = await fetcher.fetch(
+    queryMessages({
+      Desc: 1,
+      Page: 0,
+      PageSize: 1,
+    })
+  )
 
   console.log(res)
 
