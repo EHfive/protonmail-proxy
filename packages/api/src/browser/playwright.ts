@@ -119,10 +119,14 @@ class PmPagePlayWrightImpl implements PmPage {
 
   async waitForSelector(
     selector: string,
-    visible?: boolean
+    options?: {
+      visible?: boolean
+      timeout?: number
+    }
   ): Promise<PmElement> {
     const el = await this._page.waitForSelector(selector, {
-      state: visible ? 'visible' : undefined,
+      state: options?.visible ? 'visible' : undefined,
+      timeout: options?.timeout,
     })
     return new PmElementPlaywrightImpl(el)
   }

@@ -29,6 +29,7 @@ async function run() {
   // }).launch({ userDataDir: path.join(outputDir, 'playwright-chromium') })
   const browser = await new PmBrowserTypePuppeteer().launch({
     puppeteerOptions: {
+      headless: false,
       userDataDir: path.join(outputDir, 'puppeteer-chromium'),
     },
   })

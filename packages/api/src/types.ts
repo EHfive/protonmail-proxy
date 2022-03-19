@@ -26,7 +26,14 @@ export interface PmCookie {
 
 export interface PmPage {
   goto(url: string): Promise<void>
-  waitForSelector(selector: string, visible?: boolean): Promise<PmElement>
+  waitForSelector(
+    selector: string,
+    options?: {
+      visible?: boolean
+      /** timeout in ms, pass 0 to disable timeout */
+      timeout?: number
+    }
+  ): Promise<PmElement>
   waitForTimeout(timeout: number): Promise<void>
   cookies(urls?: string | string[]): Promise<PmCookie[]>
   localStorage(): Promise<{ [key: string]: any }>

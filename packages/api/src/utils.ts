@@ -17,6 +17,32 @@ export async function pRetry<T>(run: () => Promise<T>, times = 3): Promise<T> {
   throw lastErr
 }
 
+export function pAny<T extends readonly unknown[] | []>(
+  promises: T
+): Promise<Awaited<T[number]>> {
+  return new Promise((resolve, reject) => {
+    let completed = false
+    let count = promises.length
+    const onFulfilled = (value: any) => {
+      if (completed) return
+      resolve(value)
+      completed = true
+    }
+    const onRejected = (reason: any) => {
+      if (completed || --count > 0) return
+      reject(reason)
+      completed = true
+    }
+    promises.forEach((p) => {
+      if (p instanceof Promise) {
+        p.then(onFulfilled, onRejected)
+      } else {
+        onFulfilled(p)
+      }
+    })
+  })
+}
+
 export function guessCurrentPersistedSession(
   authInfo: PmAuthInfo
 ): Record<string, any> | undefined {

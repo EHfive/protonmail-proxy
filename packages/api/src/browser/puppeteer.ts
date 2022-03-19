@@ -70,10 +70,14 @@ class PmPagePuppeteerImpl implements PmPage {
 
   async waitForSelector(
     selector: string,
-    visible?: boolean
+    options?: {
+      visible?: boolean
+      timeout?: number
+    }
   ): Promise<PmElement> {
     const el = await this._page.waitForSelector(selector, {
-      visible: !!visible,
+      visible: !!options?.visible,
+      timeout: options?.timeout,
     })
     if (!el) {
       throw new PmError(`no matching element for selector "${selector}"`)
