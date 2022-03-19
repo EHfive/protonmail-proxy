@@ -2,7 +2,30 @@
   "name": "protonmail-proxy",
   "version": "0.0.0",
   "type": "module",
+  "bin": {
+    "pm-auth": "./dist/pm-auth.js",
+    "pm-notifier": "./dist/pm-notifier.js",
+    "pm-proxy": "./dist/pm-proxy.js"
+  },
+  "scripts": {
+    "build": "esmo build.ts"
+  },
   "dependencies": {
-    "@protonmail-proxy/api": "workspace:^0.0.0"
+    "@protonmail-proxy/api": "workspace:^0.0.0",
+    "env-paths": "^3.0.0",
+    "node-fetch": "^3.2.3",
+    "node-notifier": "^10.0.1",
+    "puppeteer": "^13.5.1",
+    "yargs": "^17.3.1"
+  },
+  "devDependencies": {
+    "@protonmail-proxy/tsconfig": "workspace:^0.0.0",
+    "@types/node": "^14.18.12",
+    "@types/node-notifier": "^8.0.2",
+    "@types/yargs": "^17.0.10",
+    "esbuild": "^0.14.27",
+    "esno": "^0.14.1",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.6.2"
   }
 }

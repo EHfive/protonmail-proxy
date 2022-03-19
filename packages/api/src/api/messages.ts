@@ -48,29 +48,24 @@ export interface MessageInfoExtra extends MessageInfo {
   ReplyTos: SimplePersonInfo[]
 }
 
-export interface QueryMessageParams
-  extends PageParams,
-    Partial<
-      Record<
-        | 'Location'
-        | 'LabelID'
-        | 'To'
-        | 'From'
-        | 'Subject'
-        | 'Attachments'
-        | 'Starred'
-        | 'Unread'
-        | 'AddressID'
-        | 'AutoWildcard',
-        string
-      >
-    > {}
+export interface QueryMessageParams extends PageParams {
+  Location?: string
+  LabelID?: number
+  To?: string
+  From?: string
+  Subject?: string
+  Attachments?: string
+  Starred?: NumberBool
+  Unread?: NumberBool
+  AddressID?: string
+  AutoWildcard?: string
+}
 
-interface QueryMessagesData extends PmApiData, PageInfo {
+export interface QueryMessagesData extends PmApiData, PageInfo {
   Messages: MessageInfo[]
 }
 
-interface GetMessageData extends PmApiData {
+export interface GetMessageData extends PmApiData {
   Message: MessageInfoExtra
 }
 

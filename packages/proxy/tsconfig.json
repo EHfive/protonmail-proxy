@@ -1,0 +1,9 @@
+{
+  "extends": "@protonmail-proxy/tsconfig",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "typeRoots": ["types"]
+  },
+  "include": ["**/*.ts"]
+}

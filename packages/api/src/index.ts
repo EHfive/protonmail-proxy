@@ -3,4 +3,6 @@ export * from './browser/puppeteer'
 
 export * from './auth'
 
-export * from './api'
+export * from './fetch'
+
+export * from './api/index'

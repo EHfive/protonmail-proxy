@@ -35,16 +35,23 @@ export class PmAuth {
       page.waitForSelector('form button[type=submit]', true),
     ])
     const form = await new Promise((resolve, reject) => {
+      let completed = false
       let count = 2
+      const onFulfilled = (value: any) => {
+        if (completed) return
+        resolve(value)
+        completed = true
+      }
       const onRejected = (reason: any) => {
-        if (--count == 0) reject(reason)
+        if (completed || --count > 0) return
+        reject(reason)
+        completed = true
       }
       formPromise.then((value) => {
-        if (value.every((i) => i)) resolve(value)
+        if (value.every((i) => i)) onFulfilled(value)
         onRejected(value)
       }, onRejected)
-
-      waitForMailboxPage(page).then((_) => resolve(null), onRejected)
+      waitForMailboxPage(page).then((_) => onFulfilled(null), onRejected)
     })
 
     if (form) {

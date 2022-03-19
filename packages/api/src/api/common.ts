@@ -3,6 +3,7 @@ export type NumberBool = 0 | 1
 export interface PageParams {
   ID?: string
   Page?: number
+  /** Maximum to 150 */
   PageSize?: number
   Limit?: number
   Sort?: string

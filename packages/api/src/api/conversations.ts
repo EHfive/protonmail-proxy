@@ -8,7 +8,7 @@ import {
   SimplePersonInfo,
 } from './common'
 
-interface ContextInfo {
+export interface ContextInfo {
   ContextSize: number
   ContextTime: number
   ContextNumMessages: number
@@ -16,7 +16,7 @@ interface ContextInfo {
   ContextNumAttachments: number
 }
 
-interface ConversationInfo {
+export interface ConversationInfo {
   ID: string
   Order: number
   Subject: string
@@ -33,11 +33,11 @@ interface ConversationInfo {
   Labels: Array<ContextInfo & { ID: string }>
 }
 
-interface QueryConversationsData extends PmApiData, PageInfo {
+export interface QueryConversationsData extends PmApiData, PageInfo {
   Conversations: Array<ConversationInfo & ContextInfo>
 }
 
-interface GetConversationData extends PmApiData {
+export interface GetConversationData extends PmApiData {
   Conversation: ConversationInfo
   Messages: Array<MessageInfo | MessageInfoExtra>
 }

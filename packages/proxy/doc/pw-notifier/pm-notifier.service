@@ -1,0 +1,10 @@
+[Unit]
+Description=ProtonMail Notifier
+
+[Service]
+Type=simple
+ExecStart=pm-notifier
+Restart=on-failare
+
+[Install]
+WantedBy=default.target
